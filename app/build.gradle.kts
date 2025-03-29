@@ -19,6 +19,8 @@ repositories {
 dependencies {
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    implementation("info.picocli:picocli:4.7.6")
+    annotationProcessor("info.picocli:picocli-codegen:4.7.6")
 }
 
 tasks.test {
@@ -27,4 +29,12 @@ tasks.test {
 
 tasks.getByName("run", JavaExec::class) {
     standardInput = System.`in`
+}
+
+tasks.withType<JavaCompile> {
+    options.release.set(17)
+}
+
+tasks.withType<JavaCompile> {
+    options.compilerArgs.add("-Aproject=${project.group}/${project.name}")
 }
