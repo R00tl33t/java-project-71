@@ -4,6 +4,7 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
+import java.util.concurrent.Callable;
 
 @Command(
     name = "gendiff",
@@ -13,7 +14,7 @@ import picocli.CommandLine.Parameters;
     sortOptions = false,
     customSynopsis = "gendiff [-hV] [-f=format] filepath1 filepath2"
 )
-public class App implements Runnable {
+public class App implements Callable<Integer> {
 
     @Parameters(
         index = "0",
@@ -32,18 +33,25 @@ public class App implements Runnable {
     @Option(
         names = {"-f", "--format"},
         description = "output format [default: ${DEFAULT-VALUE}]",
-        defaultValue = "stylish",
+        defaultValue = "json",
         paramLabel = "format"
     )
     private String format;
 
     public static void main(String[] args) {
-        new CommandLine(new App()).execute(args);
+        int exitCode = new CommandLine(new App()).execute(args);
+        System.exit(exitCode);
     }
 
     @Override
-    public void run() {
-        String result = Differ.generate(filePath1, filePath2, format);
-        System.out.println(result);
+    public Integer call() throws Exception {
+        try {
+            String result = Differ.generate(filePath1, filePath2, format);
+            System.out.println(result);
+            return 0;
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+            return 1;
+        }
     }
 }
