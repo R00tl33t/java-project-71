@@ -14,6 +14,3 @@ run-example-wsl:
 		file1="/mnt/c/Users/Admin/MyDocs/JavaProjects/java-project-71/file1.json" \
 		file2="/mnt/c/Users/Admin/MyDocs/JavaProjects/java-project-71/file2.json" \
 		format="json"
-
-report:
-	./gradlew jacocoTestReport
