@@ -51,6 +51,7 @@ sonar {
         property("sonar.projectKey", "R00tl33t_java-project-71")
         property("sonar.organization", "r00tl33t")
         property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.login", System.getenv("SONAR_TOKEN") ?: "")
     }
 }
 
