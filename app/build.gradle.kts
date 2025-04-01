@@ -2,7 +2,8 @@ plugins {
     id("java")
     id("application")
     id("checkstyle")
-
+    id("jacoco")
+    id("org.sonarqube") version "6.0.1.5171"
 }
 
 application {
@@ -17,25 +18,47 @@ repositories {
 }
 
 dependencies {
-    testImplementation(platform("org.junit:junit-bom:5.10.0"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
     implementation("info.picocli:picocli:4.7.6")
     annotationProcessor("info.picocli:picocli-codegen:4.7.6")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.0")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.15.2")
+
+    testImplementation(platform("org.junit:junit-bom:5.10.0"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.assertj:assertj-core:3.24.2")
+    testImplementation("org.skyscreamer:jsonassert:1.5.1")
 }
 
 tasks.test {
     useJUnitPlatform()
+    finalizedBy("jacocoTestReport")
 }
 
-tasks.getByName("run", JavaExec::class) {
-    standardInput = System.`in`
+tasks.named<JacocoReport>("jacocoTestReport") {
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
 }
 
-tasks.withType<JavaCompile> {
-    options.release.set(17)
+checkstyle {
+    toolVersion = "10.12.1"
+    configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+}
+
+sonar {
+    properties {
+        property("sonar.projectKey", "R00tl33t_java-project-71")
+        property("sonar.organization", "r00tl33t")
+        property("sonar.host.url", "https://sonarcloud.io")
+    }
 }
 
 tasks.withType<JavaCompile> {
     options.compilerArgs.add("-Aproject=${project.group}/${project.name}")
+    options.release.set(17)
+}
+
+tasks.getByName<JavaExec>("run") {
+    standardInput = System.`in`
 }

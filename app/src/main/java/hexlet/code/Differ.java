@@ -4,16 +4,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.TreeSet;
+import java.util.Objects;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Differ {
+    public static String generate(String filePath1, String filePath2) throws Exception {
+        return generate(filePath1, filePath2, "stylish");
+    }
+
     public static String generate(String filePath1, String filePath2, String format) throws Exception {
         Map<String, Object> data1 = parseFile(filePath1);
         Map<String, Object> data2 = parseFile(filePath2);
-
         return buildDiff(data1, data2);
     }
 
@@ -28,32 +30,24 @@ public class Differ {
     }
 
     private static String buildDiff(Map<String, Object> data1, Map<String, Object> data2) {
-        Set<String> allKeys = new HashSet<>();
-        allKeys.addAll(data1.keySet());
-        allKeys.addAll(data2.keySet());
+        TreeSet<String> keys = new TreeSet<>(data1.keySet());
+        keys.addAll(data2.keySet());
 
-        TreeMap<String, String> diff = new TreeMap<>();
+        StringBuilder result = new StringBuilder("{\n");
 
-        for (String key : allKeys) {
-            Object value1 = data1.get(key);
-            Object value2 = data2.get(key);
-
-            if (!data1.containsKey(key)) {
-                diff.put(key, "+ " + key + ": " + value2);
-            } else if (!data2.containsKey(key)) {
-                diff.put(key, "- " + key + ": " + value1);
-            } else if (value1.equals(value2)) {
-                diff.put(key, "  " + key + ": " + value1);
+        for (String key : keys) {
+            if (!data2.containsKey(key)) {
+                result.append("  - ").append(key).append(": ").append(data1.get(key)).append("\n");
+            } else if (!data1.containsKey(key)) {
+                result.append("  + ").append(key).append(": ").append(data2.get(key)).append("\n");
+            } else if (Objects.equals(data1.get(key), data2.get(key))) {
+                result.append("    ").append(key).append(": ").append(data1.get(key)).append("\n");
             } else {
-                diff.put(key, "- " + key + ": " + value1 + "\n" +
-                    "+ " + key + ": " + value2);
+                result.append("  - ").append(key).append(": ").append(data1.get(key)).append("\n");
+                result.append("  + ").append(key).append(": ").append(data2.get(key)).append("\n");
             }
         }
-        StringBuilder result = new StringBuilder("{\n");
-        for (Map.Entry<String, String> entry : diff.entrySet()) {
-            result.append("  ").append(entry.getValue().replace("\n", "\n  ")).append("\n");
-        }
-        result.append("}");
-        return result.toString();
+
+        return result.append("}").toString();
     }
 }
