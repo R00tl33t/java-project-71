@@ -1,4 +1,4 @@
-.PHONY: run-dist run-example run-example-wsl
+.PHONY: run-dist run-example run-example-wsl report
 
 run-dist:
 	./build/install/app/bin/app "$(file1)" "$(file2)" --format "$(format)"
@@ -14,3 +14,6 @@ run-example-wsl:
 		file1="/mnt/c/Users/Admin/MyDocs/JavaProjects/java-project-71/file1.json" \
 		file2="/mnt/c/Users/Admin/MyDocs/JavaProjects/java-project-71/file2.json" \
 		format="json"
+
+report:
+	./gradlew jacocoTestReport
