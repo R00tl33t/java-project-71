@@ -42,8 +42,10 @@ tasks.named<JacocoReport>("jacocoTestReport") {
 }
 
 checkstyle {
-    toolVersion = "10.12.1"
     configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+    toolVersion = '10.12.1'
+    ignoreFailures = false
+    showViolations = true
 }
 
 sonar {
