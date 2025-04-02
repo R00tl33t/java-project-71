@@ -1,12 +1,8 @@
 package hexlet.code;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.Objects;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Differ {
     public static String generate(String filePath1, String filePath2) throws Exception {
@@ -14,19 +10,9 @@ public class Differ {
     }
 
     public static String generate(String filePath1, String filePath2, String format) throws Exception {
-        Map<String, Object> data1 = parseFile(filePath1);
-        Map<String, Object> data2 = parseFile(filePath2);
+        Map<String, Object> data1 = Parser.parse(filePath1);
+        Map<String, Object> data2 = Parser.parse(filePath2);
         return buildDiff(data1, data2);
-    }
-
-    private static Map<String, Object> parseFile(String filePath) throws Exception {
-        Path path = Paths.get(filePath).toAbsolutePath().normalize();
-        if (!Files.exists(path)) {
-            throw new Exception("File '" + path + "' does not exist");
-        }
-        String content = Files.readString(path);
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(content, Map.class);
     }
 
     private static String buildDiff(Map<String, Object> data1, Map<String, Object> data2) {

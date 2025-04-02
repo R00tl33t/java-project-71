@@ -33,5 +33,12 @@ public class DifferTest {
         assertEquals(expectedStylish, actual);
     }
 
+    @Test
+    public void testYamlGenerate() throws Exception {
+        String filePath1 = "src/test/resources/file1.yml";
+        String filePath2 = "src/test/resources/file2.yml";
 
+        String actual = Differ.generate(filePath1, filePath2);
+        assertEquals(expectedStylish, actual);
+    }
 }
